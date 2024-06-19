@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-//import "hardhat/console.sol";
-
 contract Assessment {
     address payable public owner;
     uint256 public balance;
@@ -15,7 +13,6 @@ contract Assessment {
 
 constructor(uint initBalance) payable {
     owner = payable(msg.sender);
-    balance = initBalance;
     balance = initBalance;
     balances[owner] = initBalance;
 }

@@ -65,13 +65,8 @@ export default function HomePage() {
 
   const getOtherBalance = async (address) => {
     if (atm) {
-      try {
-        const balance = await atm.getBalanceOf(address);
-        setOtherBalance(balance);
-      } catch (err) {
-        console.error("Failed to get balance", err);
-        alert("Failed to get balance: " + err.message);
-      }
+        setOtherBalance(await atm.getBalanceOf(address));
+     
     }
   };
 
@@ -79,52 +74,32 @@ export default function HomePage() {
 
 
 
-  const deposit = async() => {
+  const deposit = async(d_amount) => {
     if (atm) {
-      let tx = await atm.deposit(1);
+      let tx = await atm.deposit(d_amount);
       await tx.wait()
       getBalance();
     }
   }
 
-  const withdraw = async() => {
+  const withdraw = async(w_amount) => {
     if (atm) {
-      let tx = await atm.withdraw(1);
+      let tx = await atm.withdraw(w_amount);
       await tx.wait()
       getBalance();
     }
   }
 
   
-      // const transfer = async (to, amount) => {
-      //   if (atm) {
-      //   try {
-      //   const tx = await atm.transfer(to, ethers.utils.parseEther(amount.toString()), {
-      //   gasLimit: 100000, // set a manual gas limit
-      //   });
-      //   await tx.wait();
-      //   getBalance();
-      //   } catch (err) {
-      //   console.error("Transfer failed", err);
-      //   }
-      //   }
-      //   };
-
       const transfer = async (to, amount) => {
         if (atm) {
-          try {
-            const tx = await atm.transfer(to, ethers.utils.parseEther(amount.toString()), {
-              gasLimit: 100000 // Set a manual gas limit
-            });
-            await tx.wait();
-            getBalance();
-          } catch (err) {
-            console.error("Transfer failed", err);
-            alert("Transfer failed: " + err.message);
-          }
+         let tx= await atm.transfer(to,amount);
+         await tx.wait()
+         getBalance();
         }
       };
 
+      
 
 const initUser = () => {
 // Check to see if user has Metamask
@@ -146,9 +121,34 @@ return (
   <div>
     <p>Your Account: {account}</p>
     <p>Your Balance: {balance}</p>
-    <button onClick={deposit}>Deposit 1 ETH</button>
-    <button onClick={withdraw}>Withdraw 1 ETH</button>
-    
+    <div className="deposit-section">
+    <input type="number" id="d_amount" placeholder="Amount in ETH" step="0.01" />
+    <button
+     onClick={() => {
+      const amount = parseFloat(document.getElementById("d_amount").value);
+      if (amount > 0) {
+        deposit(amount);
+      } else {
+        alert("Please enter a valid amount.");
+      }
+    }}
+    >Deposit ETH
+    </button>
+    </div>
+    <div className="withdraw-section">
+    <input type="number" id="w_amount" placeholder="Amount in ETH" step="0.01" />
+    <button
+     onClick={() => {
+      const amount = parseFloat(document.getElementById("w_amount").value);
+      if (amount > 0) {
+        withdraw(amount);
+      } else {
+        alert("Please enter a valid amount.");
+      }
+    }}
+    >withdraw ETH
+    </button>
+    </div>
     <div className="transfer-section">
           <input type="text" id="recipient" placeholder="Recipient Address" />
           <input type="number" id="amount" placeholder="Amount in ETH" step="0.01" />
@@ -266,6 +266,25 @@ return (
           align-items: center;
           gap: 50px; /* Add spacing between inputs and button */
           margin-top: 20px;
+                    margin-bottom: 20px
+
+        }
+           .deposit-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 50px; /* Add spacing between inputs and button */
+          margin-top: 20px;
+          margin-bottom: 20px
+        }
+           .withdraw-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 50px; /* Add spacing between inputs and button */
+          margin-top: 20px;
+                    margin-bottom: 20px
+
         }
         input {
           margin: 5px;
